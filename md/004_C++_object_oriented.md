@@ -531,7 +531,7 @@
   1. 如果某个位置已经有了默认参数, 那么从这个位置往后,从左往右都必须有默认参数
   2. 默认参数不能被重定义.   如果函数声明有默认参数,函数实现就不能有默认参数. 声明和实现只能有一个默认参数
 
-## 3.2 函数展位参数
+## 3.2 函数占位参数
 
 C++中函数的形参列表里可以有占位参数,用来做占位,调用函数时,必须填补该位置
 
@@ -713,6 +713,1543 @@ int main() {
 + 示例1: 设计一个圆形类, 求圆的周长
 
 + 示例代码:
+
+  ```c++
+  // 类的定义, 定义一个圆 类,包括圆的属性和方法, 同时可以计算圆的周长
+  class MyCircle {
+  	// 访问权限
+  	// public 公共权限
+  	public:
+  		// 圆的半径, 是圆的一个属性
+  		int m_r;
+  	// 行为
+  	//计算圆形的周长
+  		double calculatePerimeter() {
+  			return 2 * PI * m_r;
+  		};
+  	private:
+  		string shape="round";
+  
+  };
+  
+  int main() {
+  
+  	// 实例化 circle 类
+  	MyCircle circle;
+  
+  	// 类的公共属性 可以 . 的方式来访问, 给实例属性进行赋值
+  	circle.m_r = 2;
+  
+  	cout << circle.calculatePerimeter() << endl;
+  		
+  
+  	system("pause");
+  	return 0;
+  }
+  ```
+
++ 示例二: 设计一个学生类, 属性有姓名和学号,可以给姓名和学号赋值,可以显示学生的姓名和学号
+
++ 示例代码:
+
+  ```c++
+  using std::cout;
+  using std::endl;
+  using std::string;
+  using std::cin;
+  
+  // 定义一个学生类, 有姓名和学号属性, 可以给姓名和学号赋值, 可以显示学生的学号
+  class Student {
+  	public:
+  		string s_name;
+  		string s_id;
+  
+  		void setStuName(string name) {
+  			s_name = name;
+  		};
+  		void setStuId(string id) {
+  			s_id = id;
+  		};
+  
+  		void showStuInfo() {
+  			string type = "";
+  			cout << "请输入需要查询的信息, name:学生姓名;id:学生学号;all:姓名和学号" << endl;
+  			cin >> type;
+  			if (type == "name") {
+  				cout << s_name << endl;
+  			}
+  			else if (type == "id") {
+  				cout << s_id << endl;
+  			}
+  			else if (type == "all") {
+  				cout <<"姓名" << s_name << endl;
+  				cout <<"学号" << s_id << endl;
+  			}
+  		};
+  
+  
+  };
+  
+  
+  int main() {
+  	Student stu1;
+  	stu1.setStuName("张三");
+  	stu1.setStuId("114514");
+  
+  	stu1.showStuInfo();
+  
+  	system("pause");
+  	return 0;
+  }
+  ```
+
+  
+
+##### 1. C++ 中 类的定义
+
++ 定义一个类，本质上是定义一个数据类型的蓝图。这实际上并没有定义任何数据，但它定义了类的名称意味着什么，也就是说，它定义了类的对象包括了什么，以及可以在这个对象上执行哪些操作。
+
+  <img src="E:\Learn\006-cpp\img\cpp-classes-objects-2020-12-10-11.png" style="zoom:75%;" />
+
++ 类定义是以关键字 **class** 开头，后跟类的名称。类的主体是包含在一对花括号中。类定义后必须跟着一个分号或一个声明列表。例如，我们使用关键字 **class** 定义 Box 数据类型，如下所示：
+
+  ```c++
+  class Box
+  {
+     public:
+        double length;   // 盒子的长度
+        double breadth;  // 盒子的宽度
+        double height;   // 盒子的高度
+  };
+  ```
+
++ 关键字 **public** 确定了类成员的访问属性。在类对象作用域内，公共成员在类的外部是可访问的。您也可以指定类的成员为 **private** 或 **protected**
+
+##### 2. 定义C++ 中的对象 (类似 js中的 实例对象的概念)
+
++ 类提供了对象的蓝图，所以基本上，对象是根据类来创建的。声明类的对象，就像声明基本类型的变量一样。下面的语句声明了类 Box 的两个对象：
+
+  ```c++
+  Box Box1;          // 声明 Box1，类型为 Box
+  Box Box2;          // 声明 Box2，类型为 Box
+  ```
+
++ 对象 Box1 和 Box2 都有它们各自的数据成员。
+
+##### 3. 访问数据成员
+
++ 类的对象的公共数据成员可以使用直接成员访问运算符 **.** 来访问。
+
+  ![](E:\Learn\006-cpp\img\cpp-classes-objects-2020-12-10-11-2.png)
+
++ 需要注意的是，私有的成员和受保护的成员不能使用直接成员访问运算符 (.) 来直接访问。我们将在后续的教程中学习如何访问私有成员和受保护的成员。
+
+#### 封装意义二:
+
++ 据封装是面向对象编程的一个重要特点，它防止函数直接访问类类型的内部成员。类成员的访问限制是通过在类主体内部对各个区域标记 **public、private、protected** 来指定的。关键字 **public、private、protected** 称为访问修饰符。
++ 一个类可以有多个 public、protected 或 private 标记区域。每个标记区域在下一个标记区域开始之前或者在遇到类主体结束右括号之前都是有效的。成员和类的默认访问修饰符是 private。
+
++ 访问权限有三种:
+
+  1. public 公共          成员 类内可以访问, 类外(实例)可以访问
+  2. private 私有        成员 类内可以访问,类外不可以访问
+  3. protected 保护   成员 类内可以访问,类外不可以访问
+
++ 三种权限的区别:
+
+  | 类型      |                                                              |      |
+  | --------- | ------------------------------------------------------------ | ---- |
+  | public    | **公有**成员在程序中类的外部是可访问的。可以不使用任何成员函数来设置和获取公有变量的值 |      |
+  | private   | **私有**成员变量或函数在类的外部是不可访问的，甚至是不可查看的。**只有类和友元函数可以访问私有成员**。默认情况下，类的所有成员都是私有的。如果没有使用任何访问修饰符，类的成员将被假定为私有成员 |      |
+  | protected | **protected（受保护）**成员变量或函数与私有成员十分相似，但有一点不同，protected（受保护）成员在派生类（即子类）中是可访问的。 |      |
+
+  ## 继承中的特点
+
+  有public, protected, private三种继承方式，它们相应地改变了基类成员的访问属性。
+
+  - 1.**public 继承：**基类 public 成员，protected 成员，private 成员的访问属性在派生类中分别变成：public, protected, private
+  - 2.**protected 继承：**基类 public 成员，protected 成员，private 成员的访问属性在派生类中分别变成：protected, protected, private
+  - 3.**private 继承：**基类 public 成员，protected 成员，private 成员的访问属性在派生类中分别变成：private, private, private
+
+  但无论哪种继承方式，上面两点都没有改变：
+
+  - 1.private 成员只能被本类成员（类内）和友元访问，不能被派生类访问；
+  - 2.protected 成员可以被派生类访问。
+
++ 示例:
+
+  ```c++
+  using std::cout;
+  using std::endl;
+  using std::string;
+  using std::cin;
+  
+  // 类的 权限标识符 public private protected
+  //一个类可以有多个 public、protected 或 private 标记区域。
+  //每个标记区域在下一个标记区域开始之前或者在遇到类主体结束右括号之前都是有效的。成员和类的默认访问修饰符是 private。
+  
+  class PermissionClass {
+  	// public 公共 成员可以被 类内 和 实例访问
+  	string s_age;// 默认为私有类型
+  public:
+  	string s_name;
+  
+  private:
+  	string s_id;
+  
+  protected:
+  	int s_money;
+  
+  public:
+  	// 类内 可以访问 任意该内中成员, 包括 public, private, protected
+  	void setDefault() {
+  		s_name = "张三";
+  		s_id = "114514";
+  		s_money = 115;
+  	};
+  };
+  
+  int main() {
+  	PermissionClass class1;
+  	class1.s_name = "11";// 类外 只能访问public
+  	//class1.s_age = "123";//编译器报错, 成员 PermissionClass::s_age 不可访问
+  	//class1.s_id = "123";// 编译器报错, s_id成员不可访问
+  	//class1.s_money = 123;// 编译器报错, s_money成员不可访问
+  	system("pause");
+  	return 0;
+  }
+  ```
+
+  
+
+### 4.1.2 struct 和 class 的区别
+
++ 在C++ 中 struct 和 class 唯一区别就在于默认的访问权限不同
+
+  1. class 的默认权限为 private
+  2. struct的默认权限为 public
+
++ 示例:
+
+  ```c++
+  using std::cout;
+  using std::cin;
+  using std::endl;
+  
+  // class 的成员 默认属性为 private
+  class test01 {
+  	int m_r;
+  };
+  //struct为 public
+  struct test02 {
+  	int m_r;
+  };
+  
+  int main() {
+  	test01 test01;
+  	//test01.m_r;// 成员 "test01::m_r" 不可访问
+  	test02 test02;
+  	test02.m_r = 2;
+  
+  
+  	system("pause");
+  	return 0;
+  }
+  ```
+
+### 4.1.3 将成员属性设为私有
+
++ 优点:
+  1. 将所有成员属性设置为私有,可以自己控制读写权限
+  2. 对于写权限,我们可以检测数据的有效性
+
+```c++
+// 设置 class 中的 成员属性设为私有
+// 1.可以控制成员属性的读写
+// 2.对于写权限,可以检测数据的有效性
+
+class Person {
+public:
+	void setName(string name) {
+		p_name = name;
+	};
+	void getName() {
+		cout << p_name << endl;
+	};
+	void getAge() {
+		cout << (p_age ? 0 : p_age) << endl;
+	};
+	void setSex(int sex) {
+		p_sex = sex == 1 ? "男" : "女";
+	}
+
+
+
+private:
+	string p_name;// 可读可写
+	int p_age;// 只读
+	string p_sex;// 只写
+};
+
+int main() {
+	Person person;
+	person.setName("张三");
+	person.setSex(1);
+	person.getAge();
+	person.getName();
+	system("pause");
+	return 0;
+}
+```
+
+#### 实例1: 设计立方体类
+
+设计立方体类(Cube);
+
+求出立方体的面积和体积
+
+分别用全局函数和成员函数判断两个立方体是否相等
+
++ ```c++
+  #include<iostream>
+  
+  using std::cout;
+  using std::endl;
+  using std::string;
+  
+  // 建造一个立方体类
+  class Cube {
+  public:
+  	// set
+  	void setLength(int length) {
+  		c_L = length;
+  	};
+  	void setWidth(int width) {
+  		c_W = width;
+  	};
+  	void setHeight(int height) {
+  		c_H = height;
+  	};
+  	// get
+  	int getLength() {
+  		return c_L;
+  	};
+  	int getWidth() {
+  		return c_W;
+  	};
+  	int getHeight() {
+  		return c_H;
+  	};
+  	int getArea() {
+  		return(c_L * c_H + c_L * c_W + c_W * c_H) * 2;
+  	};
+  	int getBulk() {
+  		return c_L * c_W * c_H;
+  	};
+  	// 比较两个立方体是否相等的成员方法
+  	bool isSamec1(Cube& c1, Cube& c2) {
+  		// 引用传递
+  		return c1.getWidth() == c2.getWidth() && c1.getLength() == c2.getLength() && c1.getHeight() == c2.getHeight();
+  
+  	}
+  
+  
+  
+  private:
+  	int c_L=0;
+  	int c_W=0;
+  	int c_H=0;
+  };
+  
+  // 比较两个立方体是否相等的全局方法
+  bool isSamec1(Cube c1, Cube c2) {
+  	// 值传递
+  	return c1.getWidth() == c2.getWidth() && c1.getLength() == c2.getLength() && c1.getHeight() == c2.getHeight();
+  
+  }
+  
+  int main() {
+  	Cube c1;
+  	c1.setWidth(10);
+  	c1.setHeight(10);
+  	c1.setLength(10);
+  	Cube c2;
+  	c2.setWidth(10);
+  	c2.setHeight(10);
+  	c2.setLength(10);
+  	Cube c3;
+  	c3.setWidth(10);
+  	c3.setHeight(10);
+  	c3.setLength(12);
+  	cout << "长:" << c1.getLength() << endl;
+  	cout << "宽:" << c1.getWidth() << endl;
+  	cout << "高:" << c1.getHeight() << endl;
+  	cout << "面积:" << c1.getArea() << endl;
+  	cout << "体积:" << c1.getBulk() << endl;
+  	cout << (isSamec1(c1, c2) ? "相等" : "不相等") << endl;// 相等
+  	cout << (c1.isSamec1(c1, c3) ? "相等" : "不相等") << endl;// 不相等
+  	system("pause");
+  	return 0;
+  }
+  ```
+
+#### 实例二: 点和圆的关系 (类文件声明和拆分)
+
++ 类的声明, 类的文件拆分和引用
+
+```c++
+#include<iostream>
+using std::cout;
+using std::endl;
+using std::string;
+
+// 定义一个 point 类, 包含 x和y 的坐标
+class Point {
+
+public:
+	// 设置 x,y
+	void setPointX(int x) {
+		m_X = x;
+	};
+	void setPointY(int y) {
+		m_Y = y;
+	};
+
+	// 读取 x,y
+	int getPointX() {
+		return m_X;
+	};
+	int getPointY() {
+		return m_Y;
+	};
+private:
+	int m_X;
+	int m_Y;
+};
+
+
+// circle 类 包含 圆心 和 半径
+class Circle {
+public:
+	// 设置半径和圆心
+	void setRadius(int r) {
+		m_R = r;
+	}
+	void setCenter(Point& p) {
+		m_C = p;
+	}
+
+	// 读取圆心和半径
+	int getRadius() {
+		return m_R;
+	}
+	Point& getCenter() {
+		return m_C;
+	}
+
+
+private:
+	int m_R;
+	Point m_C;
+};
+
+// 全局函数,用于判断 点和圆的位置关系
+void getPointAndCircleDistance(Circle& c, Point& p) {
+	int p_X = p.getPointX();
+	int p_Y = p.getPointY();
+
+	int c_R = c.getRadius();
+	Point c_P = c.getCenter();
+	int c_X = c_P.getPointX();
+	int c_Y = c_P.getPointY();
+
+	int distance = (p_X - c_X) * (p_X - c_X)+(p_Y-c_Y)*(p_Y - c_Y);
+
+	if (distance > (c_R * c_R)) {
+		cout << "点在圆外" << endl;
+	}
+	else if (distance == (c_R * c_R)) {
+		cout << "点在圆上" << endl;
+	}
+	else
+	{
+		cout << "点在圆内" << endl;
+	}
+};
+
+int main() {
+	// 1.0设置圆类
+	Circle c1;
+	c1.setRadius(10);
+	// 1.1设置圆心点
+	Point p1;
+	p1.setPointX(10);
+	p1.setPointY(0);
+	c1.setCenter(p1);
+	
+	// 设置点
+	Point p2;
+	p2.setPointX(10);
+	p2.setPointY(10);
+	getPointAndCircleDistance(c1, p2);
+
+	system("pause");
+	return 0;
+}
+```
+
++ 拆分文件版本
+
+  **main.cpp**
+
+  ```c++
+  #include<iostream>
+  #include "circle.h"
+  using std::cout;
+  using std::endl;
+  using std::string;
+  
+  // 全局函数,用于判断 点和圆的位置关系
+  void getPointAndCircleDistance(Circle& c, Point& p) {
+  	int p_X = p.getPointX();
+  	int p_Y = p.getPointY();
+  
+  	int c_R = c.getRadius();
+  	Point c_P = c.getCenter();
+  	int c_X = c_P.getPointX();
+  	int c_Y = c_P.getPointY();
+  
+  	int distance = (p_X - c_X) * (p_X - c_X)+(p_Y-c_Y)*(p_Y - c_Y);
+  
+  	if (distance > (c_R * c_R)) {
+  		cout << "点在圆外" << endl;
+  	}
+  	else if (distance == (c_R * c_R)) {
+  		cout << "点在圆上" << endl;
+  	}
+  	else
+  	{
+  		cout << "点在圆内" << endl;
+  	}
+  };
+  
+  int main() {
+  	// 1.0设置圆类
+  	Circle c1;
+  	c1.setRadius(9);
+  	// 1.1设置圆心点
+  	Point p1;
+  	p1.setPointX(10);
+  	p1.setPointY(0);
+  	c1.setCenter(p1);
+  	
+  	// 设置点
+  	Point p2;
+  	p2.setPointX(10);
+  	p2.setPointY(10);
+  	getPointAndCircleDistance(c1, p2);
+  
+  	system("pause");
+  	return 0;
+  }
+  ```
+
+  **circle.h**
+
+  ```c++
+  #pragma once
+  #include "pointer.h"
+  class Circle {
+  public:
+  	// 设置半径和圆心
+  	void setRadius(int r);
+  	void setCenter(Point& p);
+  
+  	// 读取圆心和半径
+  	int getRadius();
+  	Point& getCenter();
+  private:
+  	int m_R;
+  	Point m_C;
+  };
+  ```
+
+  **Circle.cpp**
+
+  ```c++
+  #include "circle.h"
+  // 设置半径和圆心
+  void Circle::setRadius(int r) {
+  	m_R = r;
+  }
+  void Circle::setCenter(Point& p) {
+  	m_C = p;
+  }
+  
+  // 读取圆心和半径
+  int Circle::getRadius() {
+  	return m_R;
+  }
+  Point& Circle::getCenter() {
+  	return m_C;
+  }
+  ```
+
+  **point.h**
+
+  ```c++
+  #pragma once
+  #include<iostream>
+  using std::cout;
+  using std::endl;
+  using std::string;
+  
+  
+  // 定义一个 point 类, 包含 x和y 的坐标
+  class Point {
+  
+  public:
+  	// 设置 x,y
+  	void setPointX(int x);
+  	void setPointY(int y);
+  
+  	// 读取 x,y
+  	int getPointX();
+  	int getPointY();
+  private:
+  	int m_X;
+  	int m_Y;
+  };
+  
+  ```
+
+  **Pointer.cpp**
+
+  ```c++
+  #include "pointer.h"
+  // 设置 x,y
+  void Point::setPointX(int x) {
+  	m_X = x;
+  };
+  void Point::setPointY(int y) {
+  	m_Y = y;
+  };
+  
+  // 读取 x,y
+  int Point::getPointX() {
+  	return m_X;
+  };
+  int Point::getPointY() {
+  	return m_Y;
+  };
+  ```
+
+
+
+
+### 4.1.4 类的成员函数的声明和定义 ,以及类中的函数调用
+
++ 成员函数可以定义在类定义内部，或者单独使用**范围解析运算符 ::** 来定义。在类定义中定义的成员函数把函数声明为**内联**的，即便没有使用 inline 标识符。
+
++ class 内部定义函数(内联)
+
+  ```c++
+  // 内部定义函数
+  class Box1 {
+  public:
+  	// 类 内部定义函数 getVolume
+  	double getVolume(void) {
+  		return length * width * height;
+  	};
+  private:
+  	double length;
+  	double width;
+  	double height;
+  };
+  
+  ```
+
++ class 内部声明,外部通过**范围解析运算符** 来定义内中函数, (类中函数需要事先声明)
+
+  ```c++
+  // 类 外部 通过范围**解析运算符** 来定义内中函数, 类中函数需要事先声明
+  class Box2 {
+  public:
+  	// 类 内部定义函数 getVolume
+  	double getVolume(void);
+  private:
+  	double length;
+  	double width;
+  	double height;
+  };
+  double Box2::getVolume(void) {
+  	return length * width * height;
+  };
+  ```
+
+  
+
+## 4.2 对象的初始化和清理
+
++ 生活中我们买的电子产品都基本会有出厂设置,在某一天不用的时候也会删除一些自己的信息数据保证安全
++ C++ 面向对象来源于生活,每个对象也都会有初始设置以及对象销毁前的清理数据的设置
+
+
+
+### 4.2.1 构造函数和折构函数(js中class的constructor和这个构造函数一个概念)
+
++ 类的构造函数是一种特殊的函数，在创建一个新的对象时调用。类的析构函数也是一种特殊的函数，在删除所创建的对象时调用。
+
++ 对象的**初始化和清理**也是两个非常重要的安全问题
+  + 一个对象或者变量没有初始状态, 对其使用后果是未知
+  + 同样的使用完一个对象或变量,没有及时清理,也会造成一定的安全问题
+
+
+
++ C++ 利用了**构造函数** 和 **折构函数**解决上述问题,这两个函数将会被编译器自动调用,完成对象初始化和清理工作.对象的初始化和清理工作是编译器强制要求我们做的事情,因此**如果我们不提供构造函数和折构函数,编译器会提供编译器提供的构造函数和折构函数是空实现**
+
+
+
++ 构造函数: 主要作用在于创建对象时为对象的成员属性赋值,构造函数由编译器自动调用,无须手动调用
++ 折构函数: 主要用于在于对象那个销毁前系统自动调用,执行一些清理工作
+
++ **构造函数语法:**`类名(){}`
+
+  1. 构造函数,没有返回值也不写void
+  2. 函数名称与类名相同
+  3. 构造函数可以有参数,因此可以发生重载
+  4. 程序在调用对象时候会自动调用构造函数,无序手动调用,而且只会调用一次
+
++ **析构函数语法:**`~类名(){}`
+
+  1. 析构函数,没有返回值也不写void
+  2. 函数名称与类名相同,在名称前加上符号`~`
+  3. 析构函数不可以有参数,因此不可以发生重载
+  4. 程序在对象销毁前会自动调用析构函数,无须手动调用,而且只会调用一次
+
+  ```c++
+  using std::cout;
+  using std::endl;
+  using std::string;
+  
+  
+  // 1.构造函数 进行初始化的操作
+  //1. 构造函数,没有返回值也不写void
+  //2. 函数名称与类名相同
+  //3. 构造函数可以有参数, 因此可以发生重载
+  //4. 程序在调用对象时候会自动调用构造函数, 无序手动调用, 而且只会调用一次
+  
+  class Constructor {
+  public:
+  	Constructor() {
+  		cout << "构造函数被调用" << endl;
+  	}
+  	/*1. 析构函数 进行清理的操作
+  	1. 析构函数,没有返回值也不写void
+  	2. 函数名称与类名相同,在名称前加上符号`~`
+  	3. 析构函数不可以有参数,因此不可以发生重载
+  	4. 程序在对象销毁前会自动调用析构函数,无须手动调用,而且只会调用一次
+  	*/
+  	~Constructor() {
+  		cout << "析构函数被调用" << endl;
+  	}
+  };
+  
+  // 构造和析构都是必须有的实现,如果我们不提供,编译器会提供一个空实现的构造和析构
+  void test01() {
+  	Constructor c;// 局部变量,在栈区的数据,test01 执行完毕后,释放这个对象
+  }
+  
+  void main() {
+  	//test01();// 局部变量 中的对象C 会在函数 执行完毕后被释放
+  	// 在main 函数中也需要等到main函数执行完毕后才能 执行析构和构造,所以比较难观察到
+  	Constructor c;
+  
+  
+  	system("pause");
+  }
+  ```
+
+  
+
+#### 1. 类的 构造函数
+
++ 类的**构造函数**是类的一种特殊的成员函数，它会在每次创建类的新对象时执行。
+
+  **构造函数的<mark>名称与类的名称是完全相同的<mark>，并且<mark>不会返回任何类型</mark>，也<mark>不会返回 void</mark>。构造函数可用于为某些成员变量设置初始值**。
+
+### 4.2.2 构造函数的分类以及调用
+
++ 两种分类方式:
+
+  + 按照参数分类: 有参构造 和 无参构造(默认构造)
+  + 按类型分为: 普通构造 和 拷贝构造
+  + **拷贝构造函数的作用, 就是赋值 类的值,用于做函数的形参(值引用)或者返回**
+
++ 三种调用方式
+
+  + 括号法
+  + 显示法
+  + <a name="隐式转换法">隐式转换法</a>
+
++ 使用new 来实例化一个class
+
+  ```c++
+  Person* p8 = new Person(10);
+  ```
+
+  
+
++ 示例:
+
+  ```c++
+  #include<iostream>
+  
+  
+  using std::cout;
+  using std::endl;
+  using std::string;
+  
+  // 类中构造函数的分类
+  class Person {
+  public:
+  	// 1. 按照有无参数分类, 有参构造 和 无参构造(无参构造又叫做默认构造, 编译器自动调用的构造函数没有参数)
+  
+  	//1.1 无参构造
+  	Person() {
+  		age = 0;
+  		cout << "无参构造调用" << endl;
+  	}
+  	//1.2 有参构造
+  	Person(int a) {
+  		age = a;
+  		cout << "有参构造调用" << endl;
+  	}
+  
+  	//2. 按照类型分为 普通构造 和 拷贝构造
+  	//2.1 上述皆为普通构造函数
+  
+  	//2.2 拷贝构造
+  	Person(const Person& p) {
+  		age = p.age;
+  		cout << "拷贝构造调用" << endl;
+  	}
+  	~Person()
+  	{
+  		cout << "析构函数调用" << endl;
+  	}
+  	int age;
+  };
+  
+  
+  
+  
+  void main() {
+  	// 3. 构造函数调用方法 三种
+  
+  	//1. 括号法
+  	Person p1;// 默认构造函数调用
+  	Person p2(10);// 有参构造函数调用
+  	Person p3(p2);// 拷贝构造函数调用
+  	//Person p4()
+  	// 注意点1:不能使用着这种方法来调用构造函数, 因为编译器认为这是一个 返回Person类的函数声明,而不会认为在创建(实例化)一个对象
+  
+  	//2.显示法
+  	Person p5;
+  	Person p6 = Person(10);// 有参构造
+  	Person p7 = Person(p6);// 拷贝构造
+  
+  	// Person(10) ; 
+  	//匿名对象 特点: 当前执行结束后,系统会立即回收掉匿名对象
+  
+  	// 注意点2:
+  	// 不要用拷贝构造函数来初始化一个匿名对象 
+  	//Person(p7);// 报错 p7 重定义 
+  	// 编译器会认为 Person(p7) 等价于 Person p7(对象声明,即在实例化一个 p3的Person实例对象)
+  	Person* p8 = new Person(10); // 使用new 创建指针变量p8 来接收class实例对象
+  	cout<< p8->age <<endl;// 10
+  
+  	//3. 隐式转换法
+  	Person p10 = 10;// 相当于 Person p10 = Person(10);
+  	Person p11 = p10;// 相当于 Person p11=Person(p10);
+  	system("pause");
+  }
+  ```
+
++ 注意事项:
+  1. `Person p4()`
+     + 不能使用着这种方法来调用构造函数, 因为编译器认为这是一个 返回Person类的**函数声明**,而不会认为在创建(实例化)一个对象
+  2. `Person(p7)`
+     + 编译器会认为 Person(p7) 等价于 Person p7(对象声明,即在实例化一个 p3的Person实例对象)
+
+### 4.2.3 拷贝构造函数调用时机
+
++ C++ 中拷贝构造函数 调用时机通常有三种情况
+
+  + 使用一个已经创建完毕的对象来初始化一个新对象
+  + 值传递的方式给函数参数传参
+  + 以值方式返回局部变量
+
++ 示例:
+
+  ```c++
+  #include<iostream>
+  using std::cout;
+  using std::endl;
+  using std::string;
+  
+  
+  // 拷贝构造函数被调用的时机
+  /*
+  	1. 使用一个已经创建完毕的对象来初始化一个新对象
+  	2. 值传递的方式给函数参数传参
+  	3. 以值方式返回局部变量
+  */
+  
+  class Person {
+  public:
+  	int m_age;
+  	//1. 默认构造
+  	Person() {
+  		m_age = 0;
+  		cout << "无参构造被调用" << endl;
+  	}
+  	//2.有参构造
+  	Person(int age) {
+  		m_age = age;
+  		cout << "有参构造被调用" << endl;
+  	}
+  	//3. 拷贝构造函数
+  	Person(const Person& p) {
+  		cout << "拷贝构造函数被调用" << endl;
+  		m_age = p.m_age;
+  	}
+  	// 4. 析构函数
+  	~Person() {
+  		cout << "析构函数被调用" << endl;
+  	}
+  private:
+  	
+  };
+  
+  // 1. 使用一个已经创建完毕的对象来初始化一个新对象, 类会自动调用拷贝构造函数
+  void test01() {
+  	Person p1(10);// 有参构造函数被调用
+  	Person p2(p1);// 拷贝构造函数被调用
+  	cout << "p1.m_age: " << p1.m_age << endl;
+  	cout << "p2.m_age: " << p2.m_age << endl;
+  }
+  // 2.值传递的方式给函数参数传参,类会自动调用拷贝构造函数
+  void doWork(Person p) {
+  
+  }
+  
+  void test02() {
+  	Person p3(10);// 有参构造被调用
+  	doWork(p3);// 拷贝构造函数被调用  函数形参接收到参数时,进行了隐式调换 ,类似于 void doWork(Perosn p=p3), 为构造函数的隐式转换法
+  	// 函数形参 值传递时发生的动作为,将变量的值 赋值给这个局部变量形参
+  	// 声明函数,加上形参默认值 void doWork(Person p= Person p4(10)); 当传入参数p3 时,顶替掉即可void doWork(Person p= p3); 构造函数的隐式转换法写法
+  }
+  
+  //3. 以值方式返回局部变量, 类会自动调用 拷贝构造函数
+  Person doWork02() {
+  	Person p1;// 无参构造被调用
+  	cout <<(int*) & p1 << endl;
+  	return p1;
+  }
+  
+  void test03() {
+  	Person p4 = doWork02();// 拷贝构造被调用
+  	// 涉及到类的值被调用的, 都会自动调用 拷贝构造函数
+  	cout << (int*) & p4 << endl;
+  }
+  
+  void main() {
+  	//test01();
+  	//test02();
+  	test03();
+  	system("pause");
+  }
+  ```
+
+  
+
+### 4.2.3 构造函数调用规则
+
++ 默认情况下,c++编译器至少给一个类添加3个函数
+
+  1. 默认构造函数(无参, 函数体为空)
+  2. 默认析构函数(无参,函数体为空)
+  3. 默认拷贝构造函数,对属性进行值拷贝
+
++ 构造函数调用规则如下:
+
+  + 如果用户有定义有参构造函数,c++ 不在提供默认的无参构造,但是会提供默认拷贝构造
+  + 如果用户定义拷贝构造函数,c++不会再提供其他构造函数
+
++ 示例:
+
+  ```c++
+  #include <iostream>
+  
+  using std::cout;
+  using std::endl;
+  using std::string;
+  
+  class Person {
+  public:
+  	int m_Height = 0;
+  	// 默认构造 default constructor
+  	Person() {
+  		cout << "调用了默认构造" << endl;
+  	};
+  	// 有参构造 构造函数的重载
+  	Person(int h) {
+  		m_Height = h;
+  		cout << "调用了有参构造" << endl;
+  	};
+  	// 拷贝构造 构造函数重载
+  	Person(const Person& p) {
+  		m_Height = p.m_Height;
+  		cout << "调用了拷贝构造" << endl;
+  	};
+  	//析构函数 destructor
+  	~Person() {
+  		cout << "调用了析构函数" << endl;
+  	};
+  };
+  
+  //1.如果用户有定义有参构造函数,c++ 不在提供默认的无参构造,但是会提供默认拷贝构造
+  void test01(); //函数声明
+  //2.如果用户定义拷贝构造函数,c++不会再提供其他构造函数
+  void test02();
+  int main() {
+  	test01();
+  
+  
+  	system("pause");
+  	return 0;
+  }
+  
+  void test01() {
+  	//Person p1;//语法错误!  如果用户定义拷贝构造函数,编译器不会再提供默认构造
+  	Person p1(20);// 调用了有参构造
+  	Person p2(p1);// 调用了拷贝构造
+  	// 如果只写了有参构造, 编译器 会自动执行一个值传递的拷贝构造
+  	cout << "p2实例的1m_Height:" << p2.m_Height << endl;
+  }
+  
+  void test02() {
+  	//Person p1;//语法错误!  如果用户定义拷贝构造函数,编译器不会再提供默认构造
+  }
+  ```
+  
+
+### 4.2.5 深拷贝和 浅拷贝
+
++ 浅拷贝: 简单的赋值拷贝操作
++ 深拷贝:在堆区重新申请空间,进行拷贝操作
+
+
+
++ 示例:
+
+  ```c++
+  #include <iostream>
+  
+  using std::cout;
+  using std::endl;
+  using std::string;
+  
+  // 1. class 中的 拷贝构造函数默认为 浅拷贝, 利用new来开辟 堆区地址进行 深拷贝
+  class Person {
+  public:
+  	int m_Height;
+  	int* m_age;// int 类型的指针变量
+  	Person(int h,int a) {
+  		m_Height = h;
+  		m_age = new int(a);
+  		cout << "有参构造函数的调用" << endl;
+  	}
+  	Person(const Person& p) {
+  		m_Height = p.m_Height;
+  		//m_age = p.m_age;// 拷贝函数提供的就是类似于这种浅拷贝, 使用的变量来自于一个地址
+  		m_age = new int (*p.m_age);// 重新开辟一个堆区来存放值
+  		cout << "拷贝构造函数的调用" << endl;
+  	}
+  	~Person() {
+  		if (m_age != NULL) {
+  			delete m_age;// new 开辟的空间需要手动释放
+  			m_age = NULL;// 防止野指针
+  		}
+  		cout << "destructor 的调用" << endl;
+  	}
+  };
+  void test01();
+  
+  
+  int main() {
+  	test01();
+  	system("pause");
+  	return 0;
+  }
+  void test01() {
+  	Person p1(180, 20);
+  	cout << "p1的身高:" << p1.m_Height << "\np1的年龄:" << *p1.m_age << endl;
+  	Person p2(p1);
+  	cout << "p2的身高:" << p2.m_Height << "\np2的年龄:" << *p2.m_age << endl;
+  }
+  ```
+
+### 4.2.6 初始化列表
+
++ 作用:
+
+  C++ 提供了初始化列表语法,用来初始化属性
+
++ 语法: `构造函数():属性1(值1),属性2(值2){}`
+
++ 示例:
+
+  ```c++
+  #include <iostream>
+  
+  using std::cout;
+  using std::endl;
+  using std::string;
+  
+  class Person {
+  public:
+  	int m_A;
+  	int m_B;
+  	int m_C;
+  	// 传统的初始化赋值
+  	/*Person(int a, int b,int c) {
+  		m_A = a;
+  		m_B = b;
+  		m_C = c;
+  	};*/
+  	// 使用初始化列表进行初始化赋值
+  	/*Person() :m_A(10), m_B(20), m_C(30) {
+  
+  	};*/
+  	Person(int a,int b,int c) :m_A(a), m_B(b), m_C(c) {
+  
+  	};
+  };
+  
+  
+  void test01();
+  int main() {
+  	test01();
+  	system("pause");
+  	return 0;
+  }
+  void test01() {
+  	Person p1(10, 20, 30);
+  	//Person p1;
+  	cout << "m_A: " << p1.m_A << endl;
+  	cout << "m_B: " << p1.m_B << endl;
+  	cout << "m_C: " << p1.m_C << endl;
+  
+  }
+  ```
+
+### 4.2.7 类对象作为类成员
+
++ C++ 类中的成员可以是另外一个类的对象, 我们称该对象为对象成员
+
++ 例如:
+
+  ```c++
+  ```
+
++ B类中,有对象A作为 对象成员,
+
++ 那么创建B对象时,A与B的构造和析构函数执行顺序是怎样的?
+
++ 结论:
+
+  1. 构造时, 先执行 **对象成员**里的**构造函数**, 再执行**类本身**的**构造函数**
+  2. 析构时, 先执行**本身**的**析构函数**,再执行 对象成员的构造函数
+
++ 示例:
+
+  ```c++
+  #include <iostream>
+  
+  using std::cout;
+  using std::endl;
+  using std::string;
+  
+  // 一个类的成员 可以是另外一个对象, 这个成员 是一个 对象成员
+  class Phone {
+  public:
+  	string m_Number;
+  	// 默认 constructor
+  	Phone() {
+  		cout << "class Phone默认构造函数" << endl;
+  	};
+  	// 有参 contructor
+  	Phone(string s) {
+  		m_Number = s;
+  		cout << " class Phone有参构造被调用" << endl;
+  	}
+  	// 拷贝 constructor
+  	Phone(const Phone& p) {
+  		m_Number = p.m_Number;
+  		cout << " class Phone拷贝构造被调用" << endl;
+  	}
+  	// destructor
+  	~Phone() {
+  		cout << " class Phone析构函数被调用" << endl;
+  	}
+  };
+  
+  class Person {
+  public:
+  	
+  	// 默认 constructor
+  	Person(){
+  		cout << "class Person 默认构造函数" << endl;
+  	}
+  	// 有参 constructor
+  	Person(int a,string n):m_Age(a) ,m_Phone(n) {
+  		cout << "class Person 有参构造被调用" << endl;
+  	}
+  	// 拷贝 constructor
+  	Person(const Person& p) {
+  		m_Age = p.m_Age;
+  		m_Phone = p.m_Phone;
+  		cout << "class Person 拷贝构造被调用" << endl;
+  	}
+  	// destructor
+  	~Person() {
+  		cout << "class Person 析构函数被调用" << endl;
+  	}
+  	int m_Age;
+  	Phone m_Phone;
+  
+  };
+  void test01();
+  
+  int main() {
+  	test01();
+  	system("pause");
+  	return 0;
+  }
+  void test01() {
+  	Person p(20,"17673942507");
+  	// 构造时, 先执行 对象成员里的构造函数, 再执行类本身的构造函数
+  	//析构时, 先执行本身的析构函数,再执行 对象成员的构造函数
+  	cout << p.m_Age << p.m_Phone.m_Number << endl;
+  }
+  
+  ```
+
+### 4.2.8 静态成员(类js的class, 不过C++ static可以被实例访问)
+
++ 静态成员就是在成员变量和成员函数前加上关键字static,称之为**静态成员**
+
++ 静态成员分为:
+  + 静态成员变量
+    + 所有对象共享同一份数据(可以通过类访问 `ClassName::staticMember`)
+    + 在编译阶段分配内存
+    + 类内声明,类外初始化
+  + 静态成员函数
+    + 所有成员共享同一个函数
+    + 静态成员函数只能访问静态成员变量
+  
++ 静态成员,本质是定义在class上的,只有一份地址, 实力访问修改的都是同一份地址数据. 也和普通成员一样受到public, private,protect等权限修饰符的影响
+  
++ 示例: 静态成员变量
+
+  ```c++
+  //所有对象共享同一份数据(可以通过类访问 `ClassName::staticMember`)
+  //在编译阶段分配内存
+  //类内声明, 类外初始化
+  class Person {
+  public:
+  	static int m_Age;// class 内声明
+  private:
+  	static int m_Width;// static 也会有权限区分
+  
+  };
+  
+  
+  //class外 初始化
+  int Person::m_Age = 20;
+  
+  void test01();
+  
+  
+  int main() {
+  	test01();
+  	system("pause");
+  	return 0;
+  }
+  void test01() {
+  	//1.int Person::m_Age = 20;// error 当前范围无法定义成员 Person::m_Age
+  	Person p;
+  	cout <<"p.m_Age: " << p.m_Age << endl;//20
+  	Person p2;
+  	cout << "p2.m_Age: " << p2.m_Age << endl;//20
+  	// 2.静态成员是属于类的私有成员,在对象之间是共享同一份数据的,  和js不同的是,c++中的类示例是可以访问 静态成员的
+  	p2.m_Age = 40;
+  	cout << "p.m_Age: " << p.m_Age << endl;//40
+  
+  	//3. class中定义的 static 成员 本质上是定义在 该类上的, 实例对象访问修改的都是同一份数据,可以通过类来访问, 同时 static也是有区分 public,private,protect权限的
+  	cout << Person::m_Age << endl;//40
+  	//cout << Person::m_Width << endl; static有权限
+  
+  }
+  ```
+
++ 示例: 静态成员函数
+
+  ```c++
+  //所有成员共享同一个函数
+  //静态成员函数只能访问静态成员变量
+  class Person {
+  public:
+  	static int a;
+  	int b;
+  	static void func01(int b) {
+  		a = b;
+  		// 静态成员只能访问 静态变量, 因为静态成员的数据只存在一份, 而访问 普通变量时,该普通变量是根据类定义的实例来变化的,有多个地址上存在了 该普通变量,肯定是不允许访问和修改的
+  		//cout << b << endl;//静态成员函数 不允许读取普通变量
+  		//b = 20;//静态成员函数 不允许修改普通变量
+  	}
+  private:
+  	static void func02();// 静态成员和普通成员一样,收到权限修饰符的影响
+  };
+  
+  int Person::a = 20;
+  //int Person::func02(){}// 不能访问 private
+  
+  void test01();
+  
+  
+  int main() {
+  	test01();
+  	system("pause");
+  	return 0;
+  }
+  void test01() {
+  	Person p;
+  	cout << "p.a: " << p.a << endl;//20 通过 实力访问
+  	cout << "Peson::a :" << Person::a << endl;//20 通过类访问
+  
+  	// 实例访问 static memeber function
+  	p.func01(30);
+  	cout << "p.a: " << p.a << endl;//30 通过 实力访问
+  	cout << "Peson::a :" << Person::a << endl;//30 通过类访问
+  
+  	// 类 本身访问 static member function
+  	Person::func01(100);
+  	cout << "p.a: " << p.a << endl;//100 通过 实力访问
+  	cout << "Peson::a :" << Person::a << endl;//100 通过类访问
+  }
+  ```
+
+  
+
+## 4.3 C++ 对象模型和 this指针
+
+### 4.3.1 成员变量和成员函数分开存储
+
++  在C++中,类内的成员变量和成员函数分开存储
+
+  + 空class 的空对象占用内存大小为 1byte
+  + 非静态成员变量 在实例身上
+  + 静态成员变量 不在示例对象身上
+  + 非静态成员函数,不在实例对象身上
+  + 静态成员函数,不在实例对象身上
+
++ 只有非静态成员变量才属于类的对象上
+
++ ```c++
+  // C++ 类成员按照以下方式划分,只有一种变量 会存在 类的对象(实例) 身上
+  class Person {
+  	int m_A;// 非静态成员变量 在实例身上
+  	static int m_b;// 静态成员变量 不在示例对象身上
+  	int func() { return 0; };// 非静态成员函数,不在实例对象身上
+  	static int function2() { return 0; };// 静态成员函数,不在实例对象身上
+  };
+  void test01() {
+  	/*class Person {
+  
+  	};*/
+  	Person p;
+  	// 空 class的实例 内存占用大小为1个字节,
+  	//C++编译器会给每个空对象也分配一个内存空间,是为了区分空对象占内存的地址,每个空对象的地址也不能相同
+  	cout << "size of p: " << sizeof(p) << endl;// 1
+  }
+  
+  void test02() {
+  	
+  	Person p1;
+  	// 一旦 class 不为空, 空对象也就不复存在, 原先占用的 1byte空间也就不会存在,而是按照成员里面的非静态成员变量的大小来计算
+  	cout << "size of p1: " << sizeof(p1) << endl;// 4
+  }
+  int main() {
+  	test01();
+  	test02();
+  	system("pause");
+  	return 0;
+  }
+  ```
+
+### 4.3.2 this指针概念
+
++ C++ 中成员变量 和成员函数是分开存储的
++ 每一个非静态成员函数只会诞生一份函数实例,也就是说多个同类型的对象会共用一份代码
++ 那么问题是:这一块代码是如何区分哪个对象调用自己的呢?
+
+
+
++ C++ 通过提供特殊的对象指针,this指针,解决上述问题,**this指针指向被调用的成员函数所属的对象**
+
+
+
++ this指针是隐含每一个非静态成员函数内的一种指针
++ this指针不需要定义,直接使用即可
+
+
+
++ this指针的用途:
+
+  + 当形参和成员变量同名时,可用this指针来区分
+  + 在类的非静态成员函数中返回对象本身,可使用`return *this`(类似于js ,可以用于 链式调用)
+
++ 理解:
+
+  ```
+  this 指针是一个待定的地址变量(指针), 在class中使用它表示的是 实例对象
+  ```
+
++ [this指针 指向 当前实例化对象的原理](https://blog.csdn.net/qq_43915356/article/details/107406167)
+
+  <img src="E:\Learn\006-cpp\img\this指针工作原理.png" style="zoom:100%;" />
+
+  **类中定义的非静态成员函数，编译器会隐式的添加一个形参this，在调用非静态成员函数时编译器会对this传递当前对象的地址，所以在函数中就可以使用this指代当前对象**
+
+```c++
+#include <iostream>
+
+using std::cout;
+using std::endl;
+using std::string;
+
+// this指针的作用
+//1. 用于区分同名的形参和成员变量
+//2.可以返回return *this(可用于作为链式调用)
+
+class Person {
+public:
+	int age;
+	Person(int age) {
+		this->age = age;
+		cout << "有参构造被调用" << endl;
+	};
+	// 链式调用
+	Person& addAge(int age) {
+		this->age += age;
+		return *this;
+	}
+	// 一定要返回引用, 类似于 return Person& p2=*this, 如果不反悔引用则等同于返回的是 return Person p1=*this, 相当于使用隐式转换法去新建了一个Person实例返回,age的初始值永远都是构造函数中的10
+};
+
+void test01() {
+	//Person p1;//error 当class中有有参构造时,编译器不再提供默认构造,所以会报错
+	Person p1(10);
+	cout << p1.age << endl;//10
+
+	Person p2(10);
+	cout << p2.age << endl;//10
+
+	p2.addAge(10).addAge(10).addAge(20);
+	cout << p2.age << endl;//50
+}
+
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
++ 注意: 
+
+  ```c++
+  // 链式调用
+  	Person& addAge(int age) {
+  		this->age += age;
+  		return *this;
+  	}
+  ```
+
++ 该函数要形成链式调要一定要返回引用, 类似于 `return Person& temp=p2,`,引用返回的是p2; 如果不反悔引用则等同于返回的是 `return Person newObj=p2`, 相当于使用**<a href="#隐式转换法">隐式转换法</a>去新建了一个Person实例返回**,age的**初始值**永远都是构造函数中的10
+
+### 4.3.3 空指针访问成员函数	
+
++ C++ 中空指针也是可以调用成员函数的**,但是也要注意有没有用到this指针**
+
++ 如果用到this指针,需要加以判断保证代码的健壮性
+
++ 示例:
+
+  ```c++
+  // 空指针在调用 class中的方法时,不能用this来操作属性,因为空指针上没有该属性
+  class Person {
+  public:
+  	int m_Age;
+  	static int m_Height;
+  	void showClassName() {
+  		cout << "this is a Person class" << endl;
+  	}
+  	void showAge() {
+  		// 空指针上 this指针指向是没有m_Age属性成员的;
+  		cout << this->m_Age << endl;
+  	}
+  	void showHeight() {
+  		// 空指针上 this指针指向是没有m_Age属性成员的;
+  		cout << this->m_Height << endl;
+  	}
+  };
+  
+  void test01() {
+  	Person* p = NULL;
+  	p->showClassName();
+  	//p->showAge();//Error 空指针上 this指针指向是没有m_Age属性成员的;
+  	//p->showHeight();
+  }
+  
+  int main() {
+  	test01();
+  	system("pause");
+  	return 0;
+  }
+  ```
+
+### 4.3.4 const 修饰成员函数
+
+**常函数**
+
++ 成员函数后加const 后我们成称这个函数为**常函数**
++ 常函数内不可以修改成员属性
++ 成员属性声明加关键字mutable后,在常函数中依然可以修改
+
+
+
+**常对象**
+
++ 声明对象前加const 称该对象为常对象
++ 常对象只能调用常函数
+
+
+
++ 示例:
 
   ```c++
   ```
