@@ -320,6 +320,8 @@
 
 + 作用: 函数传参时, 可以利用引用的技术让形参修饰实参
 
++ C++ 函数中 参数默认都为值引用
+
 + 优点: 可以简化指针修改实参
 
 + 示例:
@@ -2252,6 +2254,752 @@ int main() {
 + 示例:
 
   ```c++
+  //常函数
+  class Person {
+  public:
+  	int m_Age;
+  	mutable int m_Height;// mutable 修饰成员属性,来指明这是一个可修改的成员属性, 不受到常函数的影响
+  	// this 指针的本质是一个指针常量,指针的指向是不可以改变的,永远指向 实例对象
+  	// 但是 this指向的值是可以变的
+  	void setAge(int age) {
+  		this->m_Age = age;
+  	}
+  	// 通过const加载函数参数后面来修饰this,  将this指针变成一个 常量指针常量, 使得this指向(实例)里面的值也不可被修改
+  	void setHeight(int h)const {
+  		//this->m_Age = 20;// error要想修改 成员属性, 必须加上mutable
+  		this->m_Height = h;//Error, 要想修改 成员属性, 必须加上mutable
+  	}
+  };
+  // 常对象, 本质还是和this指针一回事, 因为this指针指向的就是常对象
+  void test01() {
+  	const Person p;// 1. 使用const 来修饰一个常对象,  常对象成员属性不能更改, 除非该成员属性前有mutable修饰符号
+  	p.setHeight(20);// 常对象只能调用常函数
+  	//p.setAge(20);//常对象不能调用普通函数,因为普通函数可以更改属性成员, 而常对象的非mutable成员属性是不允许被更改的,所以常对象只能调用常函数
+  }
+  int main() {
+  	test01();
+  	system("pause");
+  	return 0;
+  }
+  ```
+  
+
+## 4.4 友元
+
+生活中你的家有客厅(Public),有你的卧室(Private)
+
+客厅所有来的客人都可以进去,但是你的卧室是私有的,也就是说只有你能进去
+
+但是呢,你也可以允许你的好闺蜜好基友进去
+
+
+
+在程序里,有些私有属性 也想让类外特殊的一些函数或者类进行访问,就需要用到友元的技术
+
+
+
+友元的目的就是让一个函数或者类 访问另一个类中的私有成员
+
+**友元关键字为friend**
+
+友元的三种实现
+
++ 全局函数做友元
++ 类做友元
++ 成员函数做友元
+
+### 4.4.1 全局函数做友元
+
+```c++
+#include <iostream>
+#include<math.h>
+
+using std::cout;
+using std::endl;
+using std::string;
+using std::pow;
+
+// 友元函数 友元函数声明的关键字为 friend
+class Pointer {
+	friend void calcDistance(Pointer* p);
+public:
+	Pointer(int x,int y):m_X(x),m_Y(y) {
+		cout << "有参构造函数被调用" << endl;
+	}
+private:
+	int m_X;
+	int m_Y;
+	void getDsitance() {
+		cout << "坐标距离原点的直线距离为: " << pow((m_X * m_X + m_Y * m_Y),0.5) << endl;
+	}
+};
+void calcDistance(Pointer* p) {
+	p->getDsitance();// 友元函数 访问私有属性
+};
+
+int main() {
+	Pointer p(3,4);
+	calcDistance(&p);//5
+	system("pause");
+	return 0;
+}
+```
+
+### 4.4.2 友元类
+
++ 类的声明:
+  `class Home;`
+
++ ```c++
+  // 类做友元
+  
+  
+  //声明类
+  class Home;
+  class GoodFriend {
+  public:
+  	Home* home;
+  	void visit();
+  	GoodFriend();
+  };
+  class Home {
+  	friend class GoodFriend;
+  public:
+  	string m_LivingRoom;
+  	Home();
+  private:
+  	string m_Bedroom;
+  };
+  Home::Home() {
+  	m_LivingRoom = "客厅";
+  	m_Bedroom = "卧室";
+  }
+  GoodFriend::GoodFriend() {
+  	home = new Home;
+  }
+  void GoodFriend::visit() {
+  	cout << "home->m_LivingRoom: " << home->m_LivingRoom << endl;
+  	cout << "home->m_Bedroom: " << home->m_Bedroom << endl;
+  }
+  void test01() {
+  	GoodFriend gf;
+  	gf.visit();
+  }
+  
+  int main() {
+  	test01();
+  	system("pause");
+  	return 0;
+  }
+  ```
+
+### 4.4.3  成员函数做友元
+
+```c++
+class Home;
+class GoodFriend {
+public:
+	GoodFriend();
+	void visit();
+	void visit2();
+	Home* home;
+};
+class Home {
+	friend void GoodFriend::visit();// 声明一个类的成员函数作为另外一个类的友元函数
+public:
+	Home();
+	string m_LivingRoom;
+private:
+	string m_BedRoom;
+};
+Home::Home() {
+	m_BedRoom = "卧室";
+	m_LivingRoom = "客厅";
+}
+GoodFriend::GoodFriend() {
+	home = new Home;
+}
+void GoodFriend::visit() {
+	cout << "visit函数访问m_Living: " << home->m_LivingRoom << endl;
+	cout << "visit函数访问m_Bedroom: " << home->m_BedRoom << endl;
+}
+void GoodFriend::visit2() {
+	cout << "visit2函数访问m_Living: " << home->m_LivingRoom << endl;
+	//cout << "visit2函数访问m_Bedroom: " << home->m_BedRoom << endl;// error 同一个类的 visit2函数不是 Home的友元函数不能访问
+}
+
+void test01() {
+	GoodFriend gf;
+	gf.visit();
+	gf.visit2();
+}
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
+## 4.5 运算符重载
+
++ 运算符重载概念: 对已有的运算符重新进行定义,赋予其另一种功能,以适应不同的数据类型
+
++ 运算符重载时, 第一个参数 为重载符号前面的位置,第二个参数为 重载符号 后面的参数,如下:
+
+  ```c++
+  int operator+(int param1,double param2);
+  // 使用重载 + 时
+  int a=1;
+  double b=2.13;
+  
+  cout<< 1+2.13 <<endl;
   ```
 
   
+
+### 4.5.1 加号运算符重载
+
++ class 成员函数实现 + 号运算符重载
++ 全局函数实现 + 号运算符重载
++ 运算符可以重载多次,(但不能对已有的数据类型进行重载)
+
++ 对 + 号运算符号进行重载的本质是对函数名为 `operator+;`的函数进行重载
+
+```c++
+using std::cout;
+using std::endl;
+using std::string;
+// 对 + 号运算符进行重载
+// 1. class 成员函数 运算符重载
+class Home {
+public:
+	int m_A;
+	int m_B;
+	Home() :m_A(10), m_B(10) {
+		cout << "Home 无参构造被调用, 无参构造创建未被声明时将不能再使用, 但拷贝构造依旧会自动调用" << endl;
+	}
+	Home(int a, int b) :m_A(a), m_B(b) {
+		cout << "Home 有参构造被调用, 无参构造创建未被声明时将不能再使用, 但拷贝构造依旧会自动调用" << endl;
+	}
+	Home operator+(const Home& h) {
+		Home home;
+		home.m_A = h.m_A + m_A;
+		home.m_B = h.m_B + m_B;
+		return home;
+	}
+};
+
+
+// 1.调用重载加号运算符的成员函数
+void test01() {
+	Home h1;
+	Home h2;
+	Home h3 = h1 + h2;
+	// 相当于,  这是一种语法糖
+	//Home h3 = h1.operator+(h2)
+	cout << h3.m_A << "    " << h3.m_B << endl;// 20  20
+}
+
+// 2.调用全局函数 进行运算符重载
+Home operator-(const Home& h1, const Home& h2) {
+	Home home;
+	home.m_A = h1.m_A - h2.m_A;
+	home.m_B = h1.m_B - h2.m_B;
+	return home;
+}
+
+void test02() {
+	Home h1(30, 30);
+	Home h2(30, 30);
+	Home h3 = h1 - h2;
+	//相当于
+	//Home h3 =operator-(h1,h2);
+	cout << h3.m_A << "    " << h3.m_B << endl;// 0  0
+}
+
+// 3.对已经重载过的 operaotr- 进行再次重载
+Home operator-(const Home& h1, int a) {
+	Home home;
+	home.m_A = h1.m_A - a;
+	home.m_B = h1.m_B - a;
+	return home;
+}
+void test03() {
+	Home h1(30, 30);
+	Home h3 = h1 -40 ;
+	//相当于
+	//Home h3 =operator-(h1,h2);
+	cout << h3.m_A << "    " << h3.m_B << endl;// -10  -10
+}
+int main() {
+	test01();
+	test02();
+	test03();
+	system("pause");
+	return 0;
+}
+```
+
+### 4.5.2 左移运算符重载
+
++ cout 是属于 ostream中的一个实例, 全局中只能有 一个ostream实例,所以要使用引用
+
+```c++
+using namespace std;
+
+// 左移运算符 重载  可能不适用 于成员函数,使用 全局函数进行重载
+class Person {
+public:
+	int m_A;
+	int m_B;
+	Person() :m_A(10), m_B(20) {
+		cout << "无参构造函数被调用" << endl;
+	}
+};
+
+// 全局函数重载左移运算符
+ostream& operator<<(ostream& cout, Person& p) {
+	cout << "p.m_A: " << p.m_A << endl;
+	cout << "p.m_B: " << p.m_B << endl;
+	// 返回引用, 以便进行链式调用
+	return cout;
+}
+
+void test01() {
+	Person p;
+	cout << p << "hello world" << endl;
+	// 以上 相当于
+	/*ostream& out= cout << p;
+	out << "hello world" << endl;*/
+}
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
+### 4.5.3 递增运算符重载
+
++ 作用:  通过重载递增运算符,实现自己的整型数据
++ 前置递增 与 后置递增 的区别
++ 前置递增,`++i`, 先++,再返回
++ 后置递增,`i++`,先返回,再++
+
+```c++
+using std::cout;
+using std::endl;
+using std::string;
+using std::ostream;
+
+// 自增(自减运算符 分为 前置 自增,与后置自增, 搞清楚 i++ 与 ++i的区别)
+class MyInteger {
+
+	friend ostream& operator<<(ostream& cout, MyInteger myInteger);
+public:
+	// 默认构造函数
+	MyInteger() {
+		m_Int = 10;
+	};
+	// 前置自增运算符 先++ 再返回
+	MyInteger& operator++() {
+		++m_Int;
+		return *this;
+        // 返回引用, 是为了防止尾调用失效, MyInteger调用拷贝函数,返回一个新的实例对象
+	}
+	// 后置自增运算符 先返回当前的数,再执行++ 操作
+	MyInteger operator++(int) {
+		MyInteger temp = *this;
+		m_Int++;
+		return temp;
+	}
+private:
+	int m_Int;
+};
+
+// 重写 左移<< 运算符,用于输出MyInterger 实例
+ostream& operator<<(ostream& cout,MyInteger myInteger) {
+	cout << myInteger.m_Int << endl;
+	return cout;
+}
+
+// 后置 ++
+void test01() {
+	MyInteger m;
+	/*cout << ++m << endl;*/
+	cout << m++ << endl;
+	cout << m << endl;
+}
+//前置 ++
+void test02() {
+	MyInteger m;
+	cout << ++(++m) << endl;
+	cout << m << endl;
+}
+
+int main() {
+	test01();
+	test02();
+	system("pause");
+	return 0;
+}
+```
+
++ 递减运算符 重载
+
+```c++
+using std::cout;
+using std::endl;
+using std::string;
+using std::ostream;
+
+// 递增运算符重载, 分为 前置递减和 后置递减
+
+class MyInteger {
+	friend ostream& operator<<(ostream& cout, MyInteger m);
+public:
+	// 默认构造函数
+	MyInteger() {
+		m_Int=10;
+	}
+	/*前置递减,不返回引用的情况
+	MyInteger operator--() {
+		m_Int--;
+		return *this;
+	}*/
+	// 前置递减 先运算 再返回运算后的结果, 要想链式调用 ,使用引用来操作同一个对象,而不是调用class内部的拷贝构造函数新建一个实例
+	MyInteger& operator--() {
+		m_Int--;
+		return *this;
+	}
+	// 后置递减
+	MyInteger operator--(int) {
+		MyInteger temp = *this;
+		m_Int--;
+		return temp;
+	}
+private:
+	int m_Int;
+};
+
+// 重载 << 运算符
+ostream& operator<<(ostream& cout, MyInteger m) {
+	cout << m.m_Int << endl;
+	return cout;
+}
+
+// 1. 前置递减, 但不返回引用的情况
+void test01() {
+	MyInteger m;
+	cout << --(--m) << endl;// 8
+	cout << m << endl;// 9
+}
+void test02() {
+	MyInteger m;
+	cout << --(--m) << endl;// 8
+	cout << m << endl;// 8
+}
+
+//2.后置递减
+void test03() {
+	MyInteger m;
+	cout << m-- << endl;//10
+	cout << m << endl;//9
+}
+int main() {
+	test01();
+	test02();
+	test03();
+	system("pause");
+	return 0;
+}
+```
+
+### 4.5.4 关系运算符 重载
+
++ 太简单了, 不写了
+
+### 4.5.5 函数调用运算符重载
+
++ 函数调用运算符`()`,也可以重载
++ 由于重载后使用的方式,非常向函数的调用, 因此称为 `仿函数`
++ 仿函数没有固定写法,非常灵活
+
+```c++
+// 函数调用符号 () 进行重载, 这种重载 常用于 STL
+class MyString {
+public:
+	void operator()(string str) {
+		cout << str << endl;
+	}
+};
+class MyAdd {
+public:
+	int operator()(int a,int b) {
+		return a + b;
+	}
+};
+
+void test01() {
+	MyString myStr;
+	myStr("这是一个重载 () 运算符传入的string的参数");
+	// 匿名对象的创建方式
+	MyString()("MyString() 创建了一个匿名对象");
+}
+
+void test02() {
+	MyAdd myAdd;
+	cout << myAdd(2, 3) << endl;//5
+}
+
+int main() {
+	test01();
+	test02();
+	system("pause");
+	return 0;
+}
+```
+
+## 4.6 继承
+
++ 继承是面向对象的三大特性之一
++ 有些类与类之间存在特殊的关系,例如下图中
+
++ 面向对象程序设计中最重要的一个概念是继承。继承允许我们依据另一个类来定义一个类，这使得创建和维护一个应用程序变得更容易。这样做，也达到了重用代码功能和提高执行效率的效果。
+
++ 当创建一个类时，您不需要重新编写新的数据成员和成员函数，只需指定新建的类继承了一个已有的类的成员即可。这个已有的类称为**基类**，新建的类称为**派生类**。
+
++ 继承代表了 **is a** 关系。例如，哺乳动物是动物，狗是哺乳动物，因此，狗是动物，等等。
++ <img src="E:\Learn\006-cpp\img\cpp-inheritance-2020-12-15-1.png" style="zoom:50%;" />
+
+###  4.6.1 继承的基本语法
+
++ 语法:`class 子类:继承方式 父类`
++ 子类 也叫 派生类
++ 父类 也叫 基类
+
+```c++
+class Dog {
+public:
+	void body() {
+		cout << "狗有四条腿" << endl;
+	}
+	void header() {
+		cout << "狗都有脑袋" << endl;
+	}
+};
+
+class BlackDog :public Dog {
+public:
+	void color() {
+		cout << "black dog 的狗毛是黑色的" << endl;
+	}
+};
+
+class WhiteDog :public Dog {
+public:
+	void color() {
+		cout << "white dog的毛是白色的" << endl;
+	}
+};
+
+void test01() {
+	BlackDog bd;
+	bd.header();
+	bd.body();
+	bd.color();
+
+	WhiteDog wd;
+	wd.header();
+	wd.body();
+	wd.color();
+}
+
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
+### 4.6.2 继承方式
+
+继承方式一共有三种:
+
++ 公共继承
++ 保护继承
++ 私有继承
+
+
+
+![](E:\Learn\006-cpp\img\clip_image002.png)
+
++ 继承方式 为public 时 `class Son :public Father`,
+  + 父类的public成员 被继承到子类 继续 作为 public成员
+  + 父类的protected成员 被继承到子类 继续 作为 protected 成员
+  + 父类的private成员,实际被继承了,但被编译器隐藏了,不能够访问
++ 继承方式  为 protected时`class Son:protected Father`
+  + 父类的public成员, 被继承到子类 作为 protected 成员
+  + 父类的protected成员,被继承到子类 作为 protected成员
+  + 父类的private成员,实际被继承了,但被编译器隐藏了,不能够访问
++ 继承方式为 private时 `class Son:private Father`,
+  + 父类的public成员,被继承到子类 作为 private成员
+  + 父类的protected成员,被继承道子类作为 private成员
+  + 父类的private成员,实际被继承了,但被编译器隐藏了,不能够访问
++ 总结:
+  子类会 继承父类 所有有权限访问的成员, 当继承方式为 public时,继承的父类权限不变, 当继承方式为 protected或者private时,继承的父类成员的权限 在子类中 全部变为 继承方式的权限
+
+```c++
+// 继承的三种方式 public protected private
+class Father {
+public:
+	int a;
+protected:
+	int b;
+private :
+	int c;
+public:
+	Father() {
+		a = b = c = 1;
+	}
+};
+
+
+// 1.public 继承, 继承父类中有权限继承的成员(public, protected),权限在子类中保持不变
+class Son1 :public Father {
+public:
+	int d;
+};
+void test01() {
+	Son1 s1;
+	cout << s1.a << endl;//1
+	//cout << s1.b << endl;// protected 成员实例无权访问
+	//cout << s1.c << endl// private成员 无权访问
+}
+
+// 2.protected 继承, 继承父类中有权限继承的成员(public, protected),继承的成员在子类中的权限全部变为protected
+class Son2 :protected Father {
+public:
+	int d;
+};
+void test02() {
+	Son2 s2;
+	//cout << s2.a << endl;// protected 成员实例无权访问
+	//cout << s2.b << endl;// protected 成员实例无权访问
+	//cout << s2.c << endl// private成员 无权访问
+}
+
+// 2.private 继承, 继承父类中有权限继承的成员(public, protected),继承的成员在子类中的权限全部变为private
+class Son3 :private Father {
+public:
+	int d;
+};
+void test03() {
+	Son3 s3;
+	//cout << s3.a << endl;// private 成员实例无权访问
+	//cout << s3.b << endl;// private 成员实例无权访问
+	//cout << s3.c << endl// private成员 无权访问
+}
+
+int main() {
+	test01();
+	test02();
+	test03();
+	system("pause");
+	return 0;
+}
+```
+
+### 4.6.3 继承中的对象模型
+
+问题: 从父类继承过来的成员中,哪些属于子类对象中
+
++ 示例:
+
+```c++
+using std::cout;
+using std::endl;
+using std::string;
+
+class Base {
+	static int f;
+public:
+	int a;
+protected:
+	int b;
+private:
+	int c;
+};
+
+class Son :public Base {
+public:
+	int d;
+};
+void test01() {
+	Son s;
+	cout << sizeof(s) << endl;// 16个字节
+	// 父类中所有非静态成员属性都会被子类继承下去
+	// 父类中的私有成员是被编译器 隐藏了,因此访问不到,但确实被继承下去了
+}
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
++ 父类中所有非静态成员属性都会被子类继承下去.  父类中的私有成员是被编译器 隐藏了,因此访问不到,但确实被继承下去了
+
+### 4.6.4 继承中的构造和析构顺序(和类的嵌套顺序是一样的)
+
+子类继承父类后,当创建子类对象,也会调用父类的构造函数
+
+
+
+问题: 父类和子类中的构造和析构顺序谁先谁后
+
+
+
+```c++
+class Father {
+public:
+	Father() {
+		cout << "父类构造函数执行" << endl;
+	}
+	~Father() {
+		cout << "父类析构函数执行" << endl;
+	}
+};
+
+class Son :public Father {
+public:
+	Son() {
+		cout << "子类构造函数被执行" << endl;
+	}
+	~Son() {
+		cout << "子类析构函数被执行" << endl;
+	}
+};
+
+void test01() {
+	Father f;
+}
+
+void test02() {
+	Son s;
+	// 父类构造函数执行
+	// 子类构造函数被执行
+	// 子类析构函数被执行
+	// 父类析构函数执行
+
+}
+int main() {
+	test01();
+	test02();
+	system("pause");
+	return 0;
+}
+```
+
+### 4.6.5  继承同名成员处理方式
+
