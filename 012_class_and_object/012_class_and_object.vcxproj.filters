@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="033_Father_class_and_Son_class_constructor_destructor_sequence4.cpp">
+    <ClCompile Include="038_diamond_inherit.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

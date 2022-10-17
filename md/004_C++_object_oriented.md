@@ -1968,8 +1968,8 @@ int main() {
 
   ```c++
   //所有对象共享同一份数据(可以通过类访问 `ClassName::staticMember`)
-  //在编译阶段分配内存
-  //类内声明, 类外初始化
+      //在编译阶段分配内存
+      //类内声明, 类外初始化
   class Person {
   public:
   	static int m_Age;// class 内声明
@@ -3002,4 +3002,344 @@ int main() {
 ```
 
 ### 4.6.5  继承同名成员处理方式
+
++ 当子类与父类出现同名的成员,如何通过子类,访问到子类或者父类中的数据呢?
++ 访问子类同名成员 直接访问即可
++ 访问父类同名成员 需要加作用域
+
++ 同名属性的处理
+
+```c++
+class Base {
+public:
+	int m_A;
+	Base() {
+		m_A = 100;
+	}
+};
+
+class Son :public Base {
+public:
+	int m_A;
+	Son() {
+		m_A = 200;
+	}
+};
+class Son2 :public Base {
+	int m_A;
+public:
+	Son2() {
+		m_A = 10;
+	}
+};
+
+class Son3 :public Base {
+public:
+	int m_A;
+	Son3() {
+		m_A = 20;
+	}
+};
+
+class Son4 :public Son3 {
+public:
+	int m_A;
+	Son4() {
+		m_A = 40;
+	}
+};
+
+void test01() {
+	Son s;
+	cout << s.m_A << endl;// 200
+	cout << s.Base::m_A << endl;// 100
+}
+
+void test02() {
+	Son2 s;
+	//cout << s.m_A << endl;// 不可访问
+	cout << s.Base::m_A << endl;//100
+}
+void test03() {
+	Son4 s;
+	cout << s.m_A << endl;// 40
+	cout << s.Son3::m_A << endl;// 20
+	cout << s.Son3::Base::m_A << endl;// 100
+	cout << s.Base::m_A << endl;// 100 和上一种方法一样
+}
+int main() {
+	test01();
+	test02();
+	test03();
+	system("pause");
+	return 0;
+}
+```
+
++ 同名函数以及发生函数重载时的处理
+
+```c++
+using std::cout;
+using std::endl;
+using std::string;
+// 当父子类中有相同的 同名函数时
+
+class Base {
+public:
+	void func1() {
+		cout << "Base类 func1" << endl;
+	}
+	void func1(int a) {
+		cout << "Base类 func1(int a)" << endl;
+	}
+};
+
+class Son :public Base {
+public:
+	void func1() {
+		cout << "Son类 func1" << endl;
+	}
+	// 子类有同名重载函数时
+	void func1(int a) {
+		cout << "Son类 func1(int a)" << endl;
+	}
+};
+void test01() {
+	Son s;
+	s.func1();// Son类 func1
+	s.Base::func1();// Base类 func1
+	// 运行重载函数
+	s.func1(2);// Son类 func1(int a)
+	s.Base::func1(100);//Base类 func1(int a)
+}
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
+### 4.6.6 继承静态成员处理方式
+
+问题: 继承中同名的静态成员在子类对象上如何访问?
+
+静态成员和非静态成员出现同名,处理方式一致
+
+
+
++ 访问子类成员,直接访问即可
++ 访问父类同名成员,需要加作用域
+
+
+
+```c++
+using std::cout;
+using std::endl;
+using std::string;
+
+// 同名静态属性和静态函数的访问
+//静态成员属性
+//1.在编译阶段分配内存
+//2.类内声明, 类外初始化
+//静态成员函数  
+//1.静态成员只能访问 静态变量, 因为静态成员的数据只存在一份, 而访问 
+//2.普通变量时,该普通变量是根据类定义的实例来变化的,有多个地址上存在了 该普通变量,肯定是不允许访问和修改的
+
+class Base {
+public:
+	static int m_A;
+	static void func1() {
+		cout << "Base static void func1()" << endl;
+	};
+	static void func1(int a) {
+		cout << "Base static void func1(int a)" << endl;
+	}
+};
+
+class Son :public Base {
+public:
+	static int m_A;
+	static void func1() {
+		cout << "Son static void func1()" << endl;
+	}
+};
+int Base::m_A = 100;
+int Son::m_A = 200;
+
+void test01() {
+	Son s;
+	cout << s.m_A << endl;// 200
+	cout << s.Base::m_A << endl;// 100
+	cout << Son::m_A << endl;// 200
+	cout << Son::Base::m_A << endl;//100
+	Son::func1();// Son static void func1()
+	Son::Base::func1();//Base static void func1()
+	Son::Base::func1(100);//Base static void func1(int a)
+}
+
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
+### 4.6.7 	多继承语法
+
+C++ 允许一个类继承多个类
+
+语法:`class 子类名:继承方式 父类1, 继承方式 父类2...`
+
+多继承可能会引发父类中有同名成员出现,需要加作用域区分
+
+**C++ 实际开发中不建议用多继承**
+
+
+
+示例:
+
+```c++
+// 一个子类可以同时继承多个父类
+class Base1 {
+public:
+	int m_A;
+	Base1() {
+		m_A = 10;
+	}
+};
+
+class Base2 {
+public:
+	int m_A;
+	Base2() {
+		m_A = 20;
+	}
+};
+
+class Son :public Base1, public Base2 {
+public:
+	int m_B;
+	int m_C;
+};
+
+void test01() {
+	Son s;
+	//cout << s.m_A << endl;//error Son::m_A不明确
+	//继承的多个父类中有同名成员时,访问这些成员时需要加作用域进行区分
+	cout << s.Base1::m_A << endl; // 10
+	cout << s.Base2::m_A << endl; // 20
+}
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
+### 4.6.8 菱形继承问题以及解决方法
+
+**菱形继承概念**
+
+​	两个派生类继承同一个类
+
+又有某个类同时继承这两个派生类
+
+这种继承被称为菱形继承,或者派生继承
+
+**典型的菱形继承案例**:
+
+![](E:\Learn\006-cpp\img\clip_image002.jpg)
+
+**菱形继承问题**
+
+1. 羊继承了动物的数据,驼同样也继承了动物的数据,当羊驼使用数据时,就会产生二义性
+2. 羊驼继承自动物的数据继承了两份,但其实这份数据只要一份就够了
+
+**解决方法:**
+
++ 利用虚继承 解决菱形继承问题
+
++ 继承之前 加上关键字 virtual 变为虚继承
+
+  ```c++
+  // 动物类
+  class Animal{
+    public:
+    	  int m_Age;  
+  };
+  // 羊类
+  class Sheep: virtual public Animal{};
+  
+  // 驼类
+  class Camel: virtual public Animal{};
+  
+  // 羊驼类
+  class Alpaca:public Sheep,public Camel{};
+  
+  ```
+
+  **其中 `Animal`类被称为<mark>虚基类</mark>>**
+
+```c++
+class Animal {
+public:
+	int m_Age;
+	Animal() {
+		m_Age = 100;
+	}
+};
+
+class Sheep : virtual public Animal {
+public:
+	Sheep() {
+		cout << "Sheep 的构造函数执行,m_Age被改变之前的值为:" << m_Age << endl;//100
+		m_Age = 20;
+	}
+};
+
+class Camel :virtual public Animal {
+public:
+	Camel() {
+		cout << "Camel 的构造函数执行,m_Age被改变之前的值为:" << m_Age << endl;//20
+		m_Age = 80;
+	}
+};
+
+class Alpaca :public Sheep, public Camel {
+public:
+	int m_B;
+};
+
+class Alpaca2 :public Camel,public Sheep  {
+public:
+	int m_B;
+};
+void test01() {
+	Alpaca a;
+	Alpaca2 a2;
+	//cout << a.m_Age << endl;// 二义性,语义不明确,通过作用域解决
+	//cout << a.Sheep::m_Age << endl; //20
+	//cout << a.Camel::m_Age << endl; //80
+	//通过定义 虚基类 来继承 Animal的 m_Age,
+
+	cout << a.m_Age << endl;// 80
+	// Animal 和 Sheep ,Camel 类 改动的m_Age 是在一个 虚基类表上的一个地址,多继承的顺序会影响构造函数的执行,先是通过Animal的构造函数让m_Age=100,然后是改造成20,最后是80
+	cout << a2.m_Age << endl;// 20
+	// Animal 和 Sheep ,Camel 类 改动的m_Age 是在一个 虚基类表上的一个地址,先是通过Animal的构造函数让m_Age=100,然后是改造成80,最后是20
+		
+		// 总的打印验证结果如下
+		//Sheep 的构造函数执行, m_Age被改变之前的值为:100
+		//Camel 的构造函数执行, m_Age被改变之前的值为 : 20
+		//Camel 的构造函数执行, m_Age被改变之前的值为 : 100
+		//Sheep 的构造函数执行, m_Age被改变之前的值为 : 80
+		//80
+		//20
+}
+
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
 
