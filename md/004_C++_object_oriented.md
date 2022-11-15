@@ -3343,3 +3343,438 @@ int main() {
 }
 ```
 
+
+
+
+
+## 4.7 多态
+
+### 4.7.1 多态的基本概念
+
+**多态是C++面向对象三大特性之一**
+
++ 多态分为两类
+
+  + 静态多态: 函数重载 和运算符重载 属于静态多态,复用函数名
+  + 动态多态:派生类 和 虚函数实现运行时多态
+
++ 静态多态和动态多态的区别
+
+  + 静态多态的函数地址早绑定 - 编译阶段确定函数地址
+  + 动态多态的函数地址晚绑定 - 运行阶段确定函数地址
+
++ 下面通过案例讲解多态:
+
+  ```c++
+  #include <iostream>
+  
+  using std::cout;
+  using std::endl;
+  using std::string;
+  // 静态多态
+  // 函数重载 和 运算符重载
+  // 编译阶段确定函数地址 - 早绑定
+  
+  //动态多态
+  // 派生类 和 虚函数
+  // 运行阶段确定函数地址 - 晚绑定
+  
+  
+  class Animal {
+  public:
+  	// 函数前加 virtual 加修饰符表示 虚函数
+  	virtual void speak() {
+  		cout << "Animal speak" << endl;
+  	}
+  };
+  
+  class Cat:public Animal {
+  public:
+  	void speak() {
+  		cout << "Cat speak" << endl;
+  	}
+  };
+  
+  class Dog:public Animal {
+  public:
+  	virtual void speak() {
+  		cout << "Dog speak" << endl;
+  	}
+  	// 派生类中的 虚函数修饰符可加可不加
+  };
+  
+  
+  void doSpeak(Animal& a) {
+  	a.speak();
+  }
+  
+  void test01() {
+  	Cat c;
+  	Dog d;
+  	// Dog 和 Cat 类中的对于父类的 speak函数都进行了重写
+  
+  	// 重载 : 函数参数或者返回值不同
+  	// 重写 : 函数参数和返回值 和原函数一样
+  	doSpeak(c);
+  	doSpeak(d);
+  }
+  
+  int main() {
+  	test01();
+  	system("pause");
+  	return 0;
+  }
+  ```
+
++ 动态多态满足条件
+  + 1. 有继承关系
+    2. 子类重写父类的虚函数
++ 动态多态的使用
+  + 父类的指针或者引用指向子类对象 `Animal& animal = cat`
+
+<img src="E:\Learn\006-cpp\img\virtual_function_table.png" style="zoom:50%;" />
+
+![](E:\Learn\006-cpp\img\mulptiple_state.png)
+
+### 4.7.2 多态案例 计算器类
+
+案例描述:
+
+分别利用普通写法和多态技术,设计实现两个操作数进运算的计算器类
+
+
+
+多态的优点:
+
++ 代码组织结构清晰
++ 可读性强
++ 利用扩展和维护 (在真实开发中,提倡开闭原则, 对扩展进行进行开发, 对修改(源码)进行关闭)
+
+
+
+示例:
+
+```c++
+// 多态 符合 开闭原则, 不去修改老代码, 在老代码的基础上进行开发
+
+// 利用 一个 多态 开发一个具有扩展性的计算器,实现 整型的四则运算
+
+// 1.实现一个计算器的抽象类
+class AbstractCalculator {
+public:
+	int m_A;
+	int m_B;
+	virtual int getResult() {
+		return 0;
+	}
+};
+
+class AddCalculator:public AbstractCalculator {
+public:
+	int getResult() {
+		return m_A + m_B;
+	}
+};
+
+class SubCalculator :public AbstractCalculator {
+public:
+	int getResult() {
+		return m_A - m_B;
+	}
+};
+
+class MulCalculator :public AbstractCalculator {
+public:
+	int getResult() {
+		return m_A*m_B;
+	}
+};
+
+class DivCalculator :public AbstractCalculator {
+public:
+	int getResult() {
+		return m_A/m_B;
+	}
+};
+
+void test01() {
+	AbstractCalculator* abc=new AddCalculator;
+	// 重写基类中的 虚函数, 需要将 基类指针的指向设为 对应的子类实例地址,达到动态对函数进行函数的地址赋值
+	abc->m_A = 10;
+	abc->m_B = 20;
+	cout <<"+: " << abc->getResult() << endl;//30
+
+	delete abc;// 清空add
+
+	abc = new SubCalculator;
+	abc->m_A = 10;
+	abc->m_B = 20;
+	cout << "+: " << abc->getResult() << endl;//-10
+	delete abc;
+
+	abc = new MulCalculator;
+	abc->m_A = 10;
+	abc->m_B = 20;
+	cout << "+: " << abc->getResult() << endl;//200
+	delete abc;
+
+	abc = new DivCalculator;
+	abc->m_A = 100;
+	abc->m_B = 20;
+	cout << "+: " << abc->getResult() << endl;//5
+	delete abc;
+
+}
+
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
+### 4.7.3 纯虚函数和抽象类
+
+在多态中,通常父类中的虚函数的实现是无意义的,主要都是调用子类重写的内容
+
+因此可以将虚函数改为纯虚函数
+
+纯虚函数语法:`virtual 返回值类型 函数名 (参数列表) = 0 ;`
+
+当类中有了纯虚函数,这个类也称为抽象类
+
+
+
+**抽象类特点**
+
++ 无法实例化对象
++ 子类必须重写抽象类中的纯虚函数,否则也属于抽象类
+
+
+
+示例:
+
+```c++
+class Base {
+public:
+	// 纯虚函数
+	// class 中只要有一个纯虚函数, 这个类就被称为 抽象类
+	// 抽象类的特点:
+	// 1.无法实例化对象
+	// 2. 抽象类的子类必须重写 父类中的 纯虚函数, 否则也会被视为一个 抽象类,同样不能被实例化
+	virtual void speak() = 0;
+
+};
+
+class Son :public Base {
+
+};
+
+class Son2 :public Base {
+public:
+	void speak() {
+		cout << "重写纯虚函数" << endl;
+	}
+};
+
+void test01() {
+	//Base base;// 拥有 纯虚函数的抽象类 不能被实例化
+	// Son son;// 继承抽象类,但是没有重写基类中的纯虚函数的派生类, 同样无法实例化
+	Son2 *s=new Son2;
+	s->speak();
+}
+
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
+### 4.7.4 多态案例二-制作饮品
+
+案例描述:
+
+制作饮品的大致流程为: 煮水 - 冲泡 - 倒入杯中 - 加入辅料
+
+利用多态技术实现本案例, 提供抽象制作饮品基类, 提供子类制作咖啡和茶叶
+
+示例:
+```c++
+// 制作饮品过程 煮水 - 冲泡 - 倒入杯中 - 加入辅料
+class MakeDrink {
+public:
+	// 煮水
+	virtual void boil() = 0;
+	//冲泡
+	virtual void brew() = 0;
+	//倒入杯中
+	virtual void pour() = 0;
+	//加入辅料
+	virtual void material() = 0;
+
+	// 制作
+	void make() {
+		boil();
+		brew();
+		pour();
+		material();
+	}
+};
+
+// 制作咖啡
+class Coffee :public MakeDrink {
+public:
+	void boil() {
+		cout << "加入农夫山泉" << endl;
+	}
+	void brew() {
+		cout << "冲泡可可粉" << endl;
+	}
+	void pour() {
+		cout << "导入玻璃杯中" << endl;
+	}
+	void material() {
+		cout << "加入糖和玛莎拉" << endl;
+	}
+};
+
+// 制作乌龙茶
+class Tea :public MakeDrink {
+public:
+	void boil() {
+		cout << "煮康师傅" << endl;
+	}
+	void brew() {
+		cout << "冲泡龙井" << endl;
+	}
+	void pour() {
+		cout << "导入茶杯中" << endl;
+	}
+	void material() {
+		cout << "加入玛莎拉,多少带点臭" << endl;
+	}
+};
+
+void doWorker(MakeDrink* drink) {
+	drink->make();
+	delete drink;
+}
+
+
+void test01() {
+	doWorker(new Coffee);
+	doWorker(new Tea);
+}
+
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
+
+
+
+
+### 4.7.5 虚析构 和 纯虚析构
+
+多态使用时,如果子类中有属性开辟到堆区, 那么父类指针在释放时无法调用到子类的析构代码
+
+
+
+解决方法: 将父类中的析构函数改为**虚析构**或者 **纯虚析构**
+
+
+
+虚析构和纯虚析构共性:
+
++ 可以解决父类指针释放子类对象
++ 都需要有具体的函数实现
+
+虚析构和纯虚析构的区别:
+
++ 如果是纯虚析构,该类属于抽象类,无法实例化对象
+
+
+
+虚析构语法:
+
+`virtual ~类名(){};`
+
+纯虚析构语法:
+
+`virtual ~类名() = 0;`
+
+`类名::~类名(){};	`
+
+
+
+```c++
+class Animal {
+public:
+	Animal() {
+		cout << "Animal constructor func execute" << endl;
+	}
+	/*~Animal() {
+		cout << "Animal destructor func execute" << endl;
+	}*/
+	// 析构函数前加上 virtual 编程虚析构函数
+	/*virtual ~Animal() {
+		cout << "Animal virtual destructor func execute" << endl;
+	}*/
+	// 纯虚析构函数, 需要在类外具体声明
+	virtual ~Animal() = 0;
+	virtual void speak() = 0;
+};
+// 纯虚函数 需要在类外声明
+Animal::~Animal() {
+	cout << "Animal pure virtual destructor func execute" << endl;
+}
+//和包含普通纯虚函数的类一样，包含了纯虚析构函数的类也是一个抽象类。不能够被实例化。
+
+class Cat :public Animal {
+public:
+	string* m_Name;
+	Cat(string str) {
+		m_Name = new string(str);
+		cout << "Cat constructor func execute" << endl;
+	}
+	virtual void speak() {
+		cout << *m_Name << "在说话" << endl;
+	}
+	~Cat() {
+		if (m_Name != NULL) {
+			delete m_Name;
+			cout << "Cat destructor func execute" << endl;
+		}
+	}
+};
+
+
+void test01() {
+	Animal* cat = new Cat("TOM");
+	cat->speak();
+	
+	// 基于 基类创建的实例, 在delete 堆区数据时, 不会执行子类的析构函数, 这样会导致子类中的m_Name的堆区数据未被删除,从而导致空间浪费,内存泄露
+	//通过父类指针去释放，会导致子类对象可能清理不干净，造成内存泄漏
+	//怎么解决？给基类增加一个虚析构函数,  这样便可使得 Cat中的析构函数执行
+	//虚析构函数就是用来解决通过父类指针释放子类对象
+	delete cat;
+};
+
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
+总结：
+
+​	1. 虚析构或纯虚析构就是用来解决通过父类指针释放子类对象
+
+​	2. 如果子类中没有堆区数据，可以不写为虚析构或纯虚析构
+
+​	3. 拥有纯虚析构函数的类也属于抽象类
