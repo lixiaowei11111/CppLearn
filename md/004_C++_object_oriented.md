@@ -3778,3 +3778,153 @@ int main() {
 ​	2. 如果子类中没有堆区数据，可以不写为虚析构或纯虚析构
 
 ​	3. 拥有纯虚析构函数的类也属于抽象类
+
+### 4.7.6 多态案例三-电脑组装
+
+案例描述:
+
+电脑主要组成部件为 CPU（用于计算），显卡（用于显示），内存条（用于存储）
+
+将每个零件封装出抽象基类，并且提供不同的厂商生产不同的零件，例如Intel厂商和Lenovo厂商
+
+创建电脑类提供让电脑工作的函数，并且调用每个零件工作的接口
+
+测试时组装三台不同的电脑进行工作
+
+
+
+```c++
+//  CPU ,显卡, 内存条的抽象类, 分别实现class 纯虚函数
+
+class CPU {
+public:
+	virtual void calculate() = 0;
+
+};
+
+class GraphCard {
+public:
+	virtual void display() = 0;
+
+};
+
+class MemoryBlock {
+public:
+	virtual void storage() = 0;
+};
+
+// 电脑, 提供工作函数
+class Computer {
+public:
+	Computer(CPU* cpu,GraphCard* gc,MemoryBlock* mb) {
+		m_cpu = cpu;
+		m_gc = gc;
+		m_mb = mb;
+
+	}
+	void work() {
+		m_cpu->calculate();
+		m_gc->display();
+		m_mb->storage();
+	}
+	~Computer() {
+		if (m_cpu != NULL) {
+			delete m_cpu;
+		}
+		if (m_gc != NULL) {
+			delete m_gc;
+		}
+		if (m_mb != NULL) {
+			delete m_mb;
+		}
+		cout << "Computer destructor func execute" << endl;
+	}
+
+private:
+	CPU* m_cpu;
+	GraphCard* m_gc;
+	MemoryBlock* m_mb;
+};
+
+// Intel CPU 派生类
+class IntelCPU :public CPU {
+public:
+	virtual void calculate() {
+		cout << "Intel CPU has run" << endl;
+	}
+};
+
+// Amd CPU 派生类
+class AmdCPU :public CPU {
+public:
+	virtual void calculate() {
+		cout << "Amd CPU has run" << endl;
+	}
+};
+
+// Nvidia GPU 派生类
+class NvidiaGPU :public GraphCard {
+public:
+	virtual void display() {
+		cout << "NvidiaGPU has run" << endl;
+	}
+};
+
+// AMD GPU 派生类
+class AmdGPU :public GraphCard {
+public:
+	virtual void display() {
+		cout << "AmdGPU has run" << endl;
+	}
+};
+
+// Samsung Memory Block 派生类
+class SamsungMemoryBlock :public MemoryBlock{
+public:
+	 void storage () {
+		cout << "Samsung MemoryBlock has storage" << endl;
+	}
+};
+
+// ZhiTai Memory Block 派生类
+class ZhiTaiMemoryBlock :public MemoryBlock {
+public:
+	void storage() {
+		cout << "ZhiTai MemoryBlock has storage" << endl;
+	}
+};
+
+void test01() {
+	CPU* cpu = new IntelCPU;
+	GraphCard* gc = new AmdGPU;
+	MemoryBlock* mb = new SamsungMemoryBlock;
+
+	Computer* c = new Computer(cpu, gc, mb);
+	c->work();
+}
+
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
+
+
+
+
+
+
+# 5. 文件操作
+
+## 5.1文本文件
+
+###  5.1.1 写文件
+
+### 5.1.2 读文件
+
+
+
+## 5.2 二进制文件
+
