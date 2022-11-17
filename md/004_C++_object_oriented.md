@@ -3918,13 +3918,227 @@ int main() {
 
 # 5. 文件操作
 
++ 程序运行时产生的数据都属于临时数据, 程序一旦运行结束都会被释放
++ 通过文件可以将数据持久化
++ C++ 中对文件操作需要包含头文件<mark>\<fstream\></mark>
+
+
+
++ 文件类型分为两种:
+  1. **文本文件** -文件以文本的 **ASCII**形式存储在计算机中
+  2. **二进制文件**-文件以文本的 **二进制**形式存储在计算机中
++ 操作文件的三大类:
+  1. ofstream: 写操作
+  2. ifstream: 读操作
+  3. fstream: 读写操作
+
 ## 5.1文本文件
 
 ###  5.1.1 写文件
 
++ 写文件步骤如下:
+
+  1. 包含头文件
+
+     `#include<fstream>`
+
+  2. 创建流对象
+
+     `ofstream ofs;`
+
+  3. 打开文件
+
+     `ofs.open("文件路径",打开方式);`
+
+  4. 写数据
+
+     `ofs<<"写入的数据";`
+
+  5. 关闭文件
+
+     `ofs.close();`
+
+  
+
+  文件打开方式：
+
+  | 打开方式    | 解释                       |
+  | ----------- | -------------------------- |
+  | ios::in     | 为读文件而打开文件         |
+  | ios::out    | 为写文件而打开文件         |
+  | ios::ate    | 初始位置：文件尾           |
+  | ios::app    | 追加方式写文件             |
+  | ios::trunc  | 如果文件存在先删除，再创建 |
+  | ios::binary | 二进制方式                 |
+
+  **注意：** 文件打开方式可以配合使用，利用|操作符
+
+  **例如：**用二进制方式写文件 `ios::binary |  ios:: out`
+
++ 示例:
+
+  ```c++
+  #include <iostream>
+  #include<fstream>
+  
+  
+  using std::cout;
+  using std::endl;
+  using std::string;
+  using std::ofstream;
+  using std::ios;
+  // 写文本文件
+  // **文本文件** -文件以文本的 **ASCII**形式存储在计算机中
+  //操作文件的三大类:
+  //
+  //1. ofstream : 写操作
+  //2. ifstream : 读操作
+  //3. fstream : 读写操作
+  
+  // 写文件步骤
+  void test01() {
+  	// 1. 引入 fstream 头文件
+  	// 2. 创建 流 对象
+  	ofstream ofs;
+  	// 3.打开文件方式
+  	ofs.open("fileIO_Demo.txt", ios::out);
+  	// 4.写数据
+  	ofs << "这是一条被写入的数据" << endl;
+  	ofs << "这是txt文本" << endl;
+  	// 5. 关闭文件
+  	ofs.close();
+  
+  }
+  
+  void test02() {
+  	// 1. 引入 fstream 头文件
+  	// 2. 创建 流 对象
+  	ofstream ofs;
+  	// 3.打开文件方式
+  	ofs.open("fileIO/01.txt", ios::out);
+  	// 4.写数据
+  	ofs << "这是一条被写入的数据" << endl;
+  	ofs << "这是txt文本" << endl;
+  	// 5. 关闭文件
+  	ofs.close();
+  
+  }
+  
+  int main() {
+  	test01();
+  	test02();
+  	system("pause");
+  	return 0;
+  }
+  ```
+
+  总结：
+
+  * 文件操作必须包含头文件 fstream
+  * 读文件可以利用 ofstream  ，或者fstream类
+  * 打开文件时候需要指定操作文件的路径，以及打开方式
+  * 利用<<可以向文件中写数据
+  * 操作完毕，要关闭文件
+
 ### 5.1.2 读文件
 
++ 读文件与写文件步骤相似,但是读取方式相对于比较多
 
+
+
++ 读文件步骤如下:
+
+  1. 包含头文件
+
+     `include<fstream>;`
+
+  2. 创建流对象
+
+     `ifstream ifs;`
+
+  3. 打开文件并判断文件是否打开成功
+
+     `ifs.open("文件路径",打开方式);`
+
+  4. 读数据
+
+     四种方式读取 (**总体思路就是通过相关函数用 字符串或者字符 来接收数据**)
+
+  5. 关闭文件
+
+     `ifs.close();`
+
++ 示例
+
+  ```c++
+  #include <iostream>
+  #include<fstream>
+  #include<sstream>
+  
+  using std::cout;
+  using std::endl;
+  using std::string;
+  using std::ifstream;
+  using std::ios;
+  using std::getline;
+  
+  // 读文件
+  void test01() {
+  	// 1.引入头文件
+  	//2. 创建 流 对象
+  	ifstream ifs;
+  
+  	//3.打开文件
+  	ifs.open("fileIO_Demo.txt", ios::in);
+  
+  	//3.1 判断文件是否打开失败
+  	if (!ifs.is_open() ){
+  		cout << "文件打开失败" << endl;
+  	}
+  
+  	//4.读取文件数据的四种方式
+  	
+  	// 4.1 方式一 C风格的字符串 循环接收
+  	/*char buf[1024] = {};
+  	while (ifs>>buf)
+  	{
+  		cout << buf << endl;
+  	}*/
+  
+  	//4.2 方式二 C风格的字符串, 配合 ifstream的getline函数, getline参数, 1.用来接收数据的字符串,2.输出的大小
+  	/*char buf[1024] = {};
+  	while (ifs.getline(buf,sizeof(buf)))
+  	{
+  		cout << buf << endl;
+  	}*/
+  
+  	//4.3 方式三 C++ 风格的字符串,接收数据, 全局函数getline 传递数据
+  	/*string str;
+  	while (getline(ifs,str))
+  	{
+  		cout << str << endl;
+  	}*/
+  
+  	//4.4 方式四 单个字符接收, 使用 ifstream的 get函数进行单个字符赋值
+  	char c;
+  	while ((c = ifs.get())!=EOF) //EOF(end of file) 用来判断文件操作是否结束的标志
+  	{
+  		cout << c;
+  	}
+  
+  
+  	//5. 关闭文件
+  	ifs.close();
+  }
+  
+  int main() {
+  	test01();
+  	system("pause");
+  	return 0;
+  }
+  ```
+  
+  
 
 ## 5.2 二进制文件
 
