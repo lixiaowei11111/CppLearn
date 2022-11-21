@@ -931,6 +931,19 @@ int main() {
   1. class 的默认权限为 private
   2. struct的默认权限为 public
 
++ <mark>在C++ 中 可以使用初始化列表的方式 来定义 Class 实例</mark>
+
+  ```c++
+  class Test01{
+  public:
+      int m_Age;
+  }
+  
+  Test01 t={20};
+  ```
+
+  
+
 + 示例:
 
   ```c++
@@ -4141,4 +4154,125 @@ int main() {
   
 
 ## 5.2 二进制文件
+
+以二进制的方式对文件进行读写操作
+
+打开方式要制定为<mark>ios::binary</mark>
+
+
+
+### 5.2.1 二进制写文件
+
+二进制文件写文件主要利用流对象调用成员函数write
+
+函数原型:`ostream& write(const char* buffer,int len);`
+
+参数: 字符指针buffer 指向内存中的一段储存空间. len是读写的字节数
+
+
+
+**示例**
+
+```c++
+#include <iostream>
+#include<fstream>
+
+
+using std::cout;
+using std::endl;
+using std::ofstream;
+using std::ios;
+
+
+// 写入二进制文件
+class Person {
+public:
+	char m_Name[64];
+	int m_Age;
+};
+
+
+void test01() {
+	// 1.包含头文件
+	// 2.利用构造函数创建并初始化 stream 对象
+	ofstream ofs("binary_file.txt", ios::out | ios::binary);
+
+	// 3. 写入 类文件进入对象
+	Person p = { "张三",28};//c++中 class 也可以使用 struct的创建方式, 注意class 和 struct的区别, 只在权限上有区别
+	ofs.write((const char*) &p,sizeof(p));
+	// (const char*)&ofs 的意思是将 Person* 强制转为 char* 指针;分为 两部分看 (const char*) 指的是要把一个类型强制转换为 char*型; &ofs 表示的是Person* 类型的指针
+
+	// 4. 关闭 stream 对象
+	ofs.close();
+}
+
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
+
++ 总结:
+  1. `Person p = { 24,"张三" }`, 用struct的方式 来实例化 class
+  2. `(const char*) &ofs`, (const char*)&ofs 的意思是将 Person* 强制转为 char* 指针;分为 两部分看 (const char*) 指的是要把一个类型强制转换为 char*型; &ofs 表示的是Person* 类型的指针
+
+### 5.2.2 读文件
+
+二进制文件读文件主要利用`stream`对象调用成员函数read
+
+函数原型:`istream& read(char *bbuffer,int len)`;
+
+参数: 字符指针bbuffer指向内存中的一段存储空间;len是读写的字节数
+
+**示例:**
+
+```c++
+#include <iostream>
+#include <fstream>
+
+
+using std::cout;
+using std::endl;
+using std::string;
+using std::ios;
+using std::ifstream;
+
+
+// 读取二进制文件 binary_file.txt
+class Person {
+public:
+	char m_Name[64];
+	int m_Age;
+};
+
+
+void test01() {
+	// 1. 添加头文件
+	// 2. 创建stream 对象
+	ifstream ifs("binary_file.txt", ios::in | ios::binary);
+
+	// 3. 判断是否读取成功
+	if (!ifs.is_open())
+	{
+		cout << "文件读取失败" << endl;
+		return;
+	};
+
+	// 4. 将文件类型 赋值给变量
+	Person p;
+	ifs.read((char*)&p, sizeof(Person));
+
+	cout << "年龄:" << p.m_Age << endl;
+	cout << "名字:" << p.m_Name << endl;
+
+	//5. 关闭 stream 对象
+	ifs.close();
+}
+int main() {
+	test01();
+	system("pause");
+	return 0;
+}
+```
 

@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="043_virtual_destructor_and_pure_virtual_destructor.cpp" />
+    <ClCompile Include="048_fileIO_stream_binary_read.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
